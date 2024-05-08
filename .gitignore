@@ -42,5 +42,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# environment file
+# environment fileをgitから除外
 dev.env
+**/ios/Flutter/Dart-Defines.xcconfig
+
+# Podfile.lockをgitから除外
+**/ios/Podfile.lock

@@ -3,10 +3,8 @@ env:
   TZ: "Asia/Tokyo"
   FLUTTER_VERSION: '3.19.6'
 on:
-  pull_request:
-    branches:
-      - challenge1/paigupai
-  workflow_dispatch: 
+  push:
+  workflow_dispatch:
 
 jobs:
   test:

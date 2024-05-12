@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map_app/ui/pages/map_page_view_model.dart';
-import 'package:flutter_map_app/utils/to_bit_description.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -79,62 +78,19 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
     );
   }
 
-  Future<BitmapDescriptor> _getCustomIcon() async {
-    return SizedBox(
-      width: 45,
-      height: 64,
-      child: Stack(
-        children: [
-          SvgPicture.asset(
-            'assets/icons/marker_icon.svg',
-            width: 45,
-            height: 64,
-            fit: BoxFit.contain,
-          ),
-          Align(
-            alignment: const Alignment(0.5, 0.5),
-            child: Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Text(
-                  '1',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ).toBitmapDescriptor();
-  }
-
   // 地図ウィジェット
   Widget _buildMap() {
     return Consumer(builder: (context, ref, _) {
       // マーカーの取得
-      final markers = ref.watch(mapPageNotifierProvider.select((value) {
-        return value.markers;
+      final markersList = ref.watch(mapPageNotifierProvider.select((value) {
+        return value.markersList;
       }));
       return GoogleMap(
         mapType: MapType.normal,
         zoomControlsEnabled: false,
         initialCameraPosition: const CameraPosition(
           target: _defaultLocation,
-          zoom: 17.0,
+          zoom: 15.0,
         ),
         onMapCreated: (GoogleMapController controller) async {
           _controller = controller;
@@ -143,7 +99,18 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
           await _notifier.checkLocationSettingDialog();
           await _refreshCurrentLocation();
         },
-        markers: markers,
+        onCameraIdle: () async {
+          // カメラの位置が変更された時の処理
+          final bounds = await _controller!.getVisibleRegion();
+          // 左下と右上の座標を取得
+          final southwest = bounds.southwest;
+          final northeast = bounds.northeast;
+          await _notifier.updateChargingSpot(
+            southwest: southwest,
+            northeast: northeast,
+          );
+        },
+        markers: markersList.toSet(),
       );
     });
   }
@@ -155,7 +122,8 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
     if (currentLocation == null) {
       return;
     }
-    _controller?.animateCamera(CameraUpdate.newLatLng(currentLocation));
+    await _controller?.animateCamera(CameraUpdate.newLatLng(currentLocation));
+    await _notifier.updateCurrentLocation(currentLocation);
   }
 
   // 位置情報の設定ダイアログlistener

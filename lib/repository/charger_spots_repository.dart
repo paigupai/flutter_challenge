@@ -1,3 +1,4 @@
+import 'package:flutter_map_app/utils/logger.dart';
 import 'package:openapi/api.dart';
 
 class ChargerSpotsRepository {
@@ -10,7 +11,8 @@ class ChargerSpotsRepository {
     required String neLng,
   }) async {
     // キーは直接コミットしないようお願いします
-    const apiKey = 'YOUR_KEY_HERE';
+    const apiKey = String.fromEnvironment('X_EVENE_NATIVE_API_TOKEN');
+    logger.d('apiKey: : $apiKey');
     final APIResponse? result = await ChargerSpotsApi().chargerSpots(
       apiKey,
       swLat: swLat,

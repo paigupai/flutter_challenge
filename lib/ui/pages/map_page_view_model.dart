@@ -1,7 +1,10 @@
+import 'package:flutter_map_app/repository/charger_spots_repository.dart';
+import 'package:flutter_map_app/ui/common/custom_marker_icon.dart';
 import 'package:flutter_map_app/ui/pages/map_page_state.dart';
 import 'package:flutter_map_app/utils/logger.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:openapi/api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'map_page_view_model.g.dart';
@@ -26,6 +29,10 @@ class MapPageNotifier extends _$MapPageNotifier {
   MapPageState build() {
     return const MapPageState();
   }
+
+  // 充電スポットのリポジトリ
+  final ChargerSpotsRepository _chargerSpotsRepository =
+      ChargerSpotsRepository();
 
   // 位置情報の設定ダイアログを表示するかどうかをチェック
   Future<void> checkLocationSettingDialog() async {
@@ -86,7 +93,72 @@ class MapPageNotifier extends _$MapPageNotifier {
     if (locationResult != LocationSettingResult.enabled) {
       return null;
     }
-    final position = await Geolocator.getCurrentPosition();
+    final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     return LatLng(position.latitude, position.longitude);
+  }
+
+  // 現在位置のmarkerを更新
+  Future<void> updateCurrentLocation(LatLng currentLocation) async {
+    final currentLocationMarker = Marker(
+      markerId: const MarkerId('currentLocation'),
+      position: currentLocation,
+      infoWindow: const InfoWindow(title: '現在地'),
+      icon: await CustomMarkerIcon.getCurrentLocationIcon(),
+    );
+    final list = List<Marker>.from(state.markersList);
+    list.add(currentLocationMarker);
+    state = state.copyWith(markersList: list, currentLocation: currentLocation);
+  }
+
+  // 充電スポットのmarkerを更新
+  // [southwest] 左下の座標
+  // [northeast] 右上の座標
+  Future<void> updateChargingSpot({
+    required LatLng southwest,
+    required LatLng northeast,
+  }) async {
+    // 最南西（左下）の緯度
+    final swLat = southwest.latitude;
+    // 最南西（左下）の経度
+    final swLng = southwest.longitude;
+    // 最北東（右上）の緯度
+    final neLat = northeast.latitude;
+    // 最北東（右上）の経度
+    final neLng = northeast.longitude;
+
+    final result = await _chargerSpotsRepository.getChargerSpots(
+      swLat: swLat.toString(),
+      swLng: swLng.toString(),
+      neLat: neLat.toString(),
+      neLng: neLng.toString(),
+    );
+
+    // 取得失敗時
+    if (result == null || result.status != APIResponseStatusEnum.ok) {
+      return;
+    }
+    // 充電スポットのリスト
+    final chargerSpots = result.chargerSpots;
+    final list = List<Marker>.from(state.markersList);
+
+    // 充電スポットのマーカーを作成
+    await Future.wait(chargerSpots.map((spot) async {
+      logger.d(
+          'chargerSpot: name:${spot.name} \n lat:${spot.latitude} \n lng:${spot.longitude}');
+      final marker = Marker(
+        markerId: MarkerId(spot.uuid),
+        position: LatLng(spot.latitude.toDouble(), spot.longitude.toDouble()),
+        infoWindow: InfoWindow(title: spot.name),
+        icon: await CustomMarkerIcon.getChargingSpotIcon(
+          chargerCount: spot.chargerDevices.length,
+        ),
+        onTap: () {
+          logger.d('marker tapped: ${spot.name}');
+        },
+      );
+      list.add(marker);
+    }));
+    state = state.copyWith(markersList: list);
   }
 }

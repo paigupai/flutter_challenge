@@ -12,6 +12,6 @@ class MapPageState with _$MapPageState {
     // 位置情報の設定ダイアログを表示するかどうか
     @Default(false) bool needShowPermissionDialog,
     LatLng? currentLocation,
-    @Default(<Marker>{}) Set<Marker> markers,
+    @Default([]) List<Marker> markersList,
   }) = _MapPageState;
 }

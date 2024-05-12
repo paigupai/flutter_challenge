@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map_app/ui/pages/map_page_view_model.dart';
+import 'package:flutter_map_app/utils/api_charger_spot_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -222,22 +223,28 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
       ]),
       TableRow(children: [
         const Text('充電出力'),
-        Text('${device.power.toString()}kW'),
+        Text(chargerSpot.devicesPower),
       ]),
       TableRow(children: [
-        const Text('営業時間'),
-        if (device.serviceStartTime == null || device.serviceEndTime == null)
-          const Text('-')
+        if (chargerSpot.isOpen)
+          const Text(
+            '営業中',
+            style: TextStyle(
+              color: Colors.green,
+            ),
+          )
         else
-          Text('${device.serviceStartTime} - ${device.serviceEndTime}'),
+          const Text(
+            '営業時間外',
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        Text(chargerSpot.businessHours),
       ]),
       TableRow(children: [
         const Text('定休日'),
-        if (chargerSpot.maintenanceNote.isEmpty ||
-            chargerSpot.maintenanceNote.first == null)
-          const Text('-')
-        else
-          Text(chargerSpot.maintenanceNote.map((e) => e).join('、')),
+        Text(chargerSpot.regularHoliday),
       ]),
     ]);
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map_app/utils/to_bit_description.dart';
+import 'package:flutter_map_app/utils/widget_extension.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:simple_shadow/simple_shadow.dart';

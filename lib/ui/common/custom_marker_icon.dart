@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_app/utils/to_bit_description.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 ///
 /// marker用のカスタムアイコン
@@ -26,11 +27,14 @@ class CustomMarkerIcon {
       height: 64,
       child: Stack(
         children: [
-          SvgPicture.asset(
-            'assets/icons/marker_icon.svg',
-            width: 45,
-            height: 64,
-            fit: BoxFit.contain,
+          SimpleShadow(
+            opacity: 0.3,
+            child: SvgPicture.asset(
+              'assets/icons/marker_icon.svg',
+              width: 45,
+              height: 64,
+              fit: BoxFit.contain,
+            ),
           ),
           Positioned(
             top: 12,

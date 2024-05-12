@@ -17,9 +17,14 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MapPageState {
 // 位置情報の設定ダイアログを表示するかどうか
-  bool get needShowPermissionDialog => throw _privateConstructorUsedError;
-  LatLng? get currentLocation => throw _privateConstructorUsedError;
-  List<Marker> get markersList => throw _privateConstructorUsedError;
+  bool get needShowPermissionDialog =>
+      throw _privateConstructorUsedError; // 現在地
+  LatLng? get currentLocation => throw _privateConstructorUsedError; // マーカーリスト
+  List<Marker> get markersList =>
+      throw _privateConstructorUsedError; // 充電スポットリスト
+  List<APIChargerSpot> get chargerSpots =>
+      throw _privateConstructorUsedError; // 選択された充電スポット
+  String? get selectedId => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapPageStateCopyWith<MapPageState> get copyWith =>
@@ -35,7 +40,9 @@ abstract class $MapPageStateCopyWith<$Res> {
   $Res call(
       {bool needShowPermissionDialog,
       LatLng? currentLocation,
-      List<Marker> markersList});
+      List<Marker> markersList,
+      List<APIChargerSpot> chargerSpots,
+      String? selectedId});
 }
 
 /// @nodoc
@@ -54,6 +61,8 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
     Object? needShowPermissionDialog = null,
     Object? currentLocation = freezed,
     Object? markersList = null,
+    Object? chargerSpots = null,
+    Object? selectedId = freezed,
   }) {
     return _then(_value.copyWith(
       needShowPermissionDialog: null == needShowPermissionDialog
@@ -68,6 +77,14 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
           ? _value.markersList
           : markersList // ignore: cast_nullable_to_non_nullable
               as List<Marker>,
+      chargerSpots: null == chargerSpots
+          ? _value.chargerSpots
+          : chargerSpots // ignore: cast_nullable_to_non_nullable
+              as List<APIChargerSpot>,
+      selectedId: freezed == selectedId
+          ? _value.selectedId
+          : selectedId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -83,7 +100,9 @@ abstract class _$$MapPageStateImplCopyWith<$Res>
   $Res call(
       {bool needShowPermissionDialog,
       LatLng? currentLocation,
-      List<Marker> markersList});
+      List<Marker> markersList,
+      List<APIChargerSpot> chargerSpots,
+      String? selectedId});
 }
 
 /// @nodoc
@@ -100,6 +119,8 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
     Object? needShowPermissionDialog = null,
     Object? currentLocation = freezed,
     Object? markersList = null,
+    Object? chargerSpots = null,
+    Object? selectedId = freezed,
   }) {
     return _then(_$MapPageStateImpl(
       needShowPermissionDialog: null == needShowPermissionDialog
@@ -114,6 +135,14 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
           ? _value._markersList
           : markersList // ignore: cast_nullable_to_non_nullable
               as List<Marker>,
+      chargerSpots: null == chargerSpots
+          ? _value._chargerSpots
+          : chargerSpots // ignore: cast_nullable_to_non_nullable
+              as List<APIChargerSpot>,
+      selectedId: freezed == selectedId
+          ? _value.selectedId
+          : selectedId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -124,16 +153,22 @@ class _$MapPageStateImpl implements _MapPageState {
   const _$MapPageStateImpl(
       {this.needShowPermissionDialog = false,
       this.currentLocation,
-      final List<Marker> markersList = const []})
-      : _markersList = markersList;
+      final List<Marker> markersList = const [],
+      final List<APIChargerSpot> chargerSpots = const [],
+      this.selectedId})
+      : _markersList = markersList,
+        _chargerSpots = chargerSpots;
 
 // 位置情報の設定ダイアログを表示するかどうか
   @override
   @JsonKey()
   final bool needShowPermissionDialog;
+// 現在地
   @override
   final LatLng? currentLocation;
+// マーカーリスト
   final List<Marker> _markersList;
+// マーカーリスト
   @override
   @JsonKey()
   List<Marker> get markersList {
@@ -142,9 +177,24 @@ class _$MapPageStateImpl implements _MapPageState {
     return EqualUnmodifiableListView(_markersList);
   }
 
+// 充電スポットリスト
+  final List<APIChargerSpot> _chargerSpots;
+// 充電スポットリスト
+  @override
+  @JsonKey()
+  List<APIChargerSpot> get chargerSpots {
+    if (_chargerSpots is EqualUnmodifiableListView) return _chargerSpots;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_chargerSpots);
+  }
+
+// 選択された充電スポット
+  @override
+  final String? selectedId;
+
   @override
   String toString() {
-    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, currentLocation: $currentLocation, markersList: $markersList)';
+    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, currentLocation: $currentLocation, markersList: $markersList, chargerSpots: $chargerSpots, selectedId: $selectedId)';
   }
 
   @override
@@ -158,12 +208,21 @@ class _$MapPageStateImpl implements _MapPageState {
             (identical(other.currentLocation, currentLocation) ||
                 other.currentLocation == currentLocation) &&
             const DeepCollectionEquality()
-                .equals(other._markersList, _markersList));
+                .equals(other._markersList, _markersList) &&
+            const DeepCollectionEquality()
+                .equals(other._chargerSpots, _chargerSpots) &&
+            (identical(other.selectedId, selectedId) ||
+                other.selectedId == selectedId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, needShowPermissionDialog,
-      currentLocation, const DeepCollectionEquality().hash(_markersList));
+  int get hashCode => Object.hash(
+      runtimeType,
+      needShowPermissionDialog,
+      currentLocation,
+      const DeepCollectionEquality().hash(_markersList),
+      const DeepCollectionEquality().hash(_chargerSpots),
+      selectedId);
 
   @JsonKey(ignore: true)
   @override
@@ -176,14 +235,20 @@ abstract class _MapPageState implements MapPageState {
   const factory _MapPageState(
       {final bool needShowPermissionDialog,
       final LatLng? currentLocation,
-      final List<Marker> markersList}) = _$MapPageStateImpl;
+      final List<Marker> markersList,
+      final List<APIChargerSpot> chargerSpots,
+      final String? selectedId}) = _$MapPageStateImpl;
 
   @override // 位置情報の設定ダイアログを表示するかどうか
   bool get needShowPermissionDialog;
-  @override
+  @override // 現在地
   LatLng? get currentLocation;
-  @override
+  @override // マーカーリスト
   List<Marker> get markersList;
+  @override // 充電スポットリスト
+  List<APIChargerSpot> get chargerSpots;
+  @override // 選択された充電スポット
+  String? get selectedId;
   @override
   @JsonKey(ignore: true)
   _$$MapPageStateImplCopyWith<_$MapPageStateImpl> get copyWith =>

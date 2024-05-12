@@ -5,6 +5,7 @@ import 'package:flutter_map_app/ui/pages/map_page_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:openapi/api.dart';
 
 ///
 /// 地図ページ
@@ -21,17 +22,6 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
 
   // デフォルトの位置情報
   static const _defaultLocation = LatLng(35.681236, 139.767125);
-
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
 
   late final MapPageNotifier _notifier;
 
@@ -62,10 +52,14 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // 位置情報の設定ダイアログlistener
     _showPermissionDialogListener();
     return Scaffold(
       body: SafeArea(
-        child: _buildMap(),
+        child: Stack(children: [
+          _buildMap(),
+          _buildChargerSpotCardList(),
+        ]),
       ),
       floatingActionButton: IconButton(
         onPressed: _refreshCurrentLocation,
@@ -113,6 +107,165 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
         markers: markersList.toSet(),
       );
     });
+  }
+
+  // 充電スポットカードリスト
+  Widget _buildChargerSpotCardList() {
+    return Consumer(builder: (context, ref, _) {
+      final width = MediaQuery.sizeOf(context).width;
+      // 充電スポットのリスト
+      final chargerSpots = ref.watch(mapPageNotifierProvider.select(
+        (value) => value.chargerSpots,
+      ));
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: FractionallySizedBox(
+          heightFactor: 0.3,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: chargerSpots.length,
+            itemBuilder: (context, index) {
+              final chargerSpot = chargerSpots[index];
+              return GestureDetector(
+                onTap: () {
+                  // 選択された充電スポットのIDを更新
+                  // _notifier.updateSelectedId(chargerSpot.uuid);
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(left: 16, bottom: 20),
+                  width: width * 0.8,
+                  child: Card(
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _cardImage(chargerSpot.images),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16, top: 8),
+                          child: Text(chargerSpot.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: _chargerSpotInfo(chargerSpot),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: _openMapAppLinkView(chargerSpot),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    });
+  }
+
+  // カードの画像ウィジェット
+  Widget _cardImage(List<APIChargerSpotImage> images) {
+    if (images.isEmpty) {
+      return SvgPicture.asset(
+        'assets/images/no_image.svg',
+        height: 60,
+        fit: BoxFit.cover,
+      );
+    }
+    if (images.length > 1) {
+      return Row(children: [
+        Expanded(
+          child: Image.network(
+            images[0].url,
+            height: 60,
+            fit: BoxFit.cover,
+          ),
+        ),
+        const SizedBox(
+          width: 6,
+        ),
+        Expanded(
+          child: Image.network(
+            images[1].url,
+            height: 60,
+            fit: BoxFit.cover,
+          ),
+        )
+      ]);
+    }
+
+    return Image.network(
+      images.first.url,
+      width: MediaQuery.sizeOf(context).width * 0.8,
+      height: 60,
+      fit: BoxFit.cover,
+    );
+  }
+
+  // 充電スポット情報
+  Widget _chargerSpotInfo(APIChargerSpot chargerSpot) {
+    final device = chargerSpot.chargerDevices.first;
+    return Table(columnWidths: const {
+      0: FlexColumnWidth(1),
+      1: FlexColumnWidth(2),
+    }, children: [
+      TableRow(children: [
+        const Text('充電器数'),
+        Text('${chargerSpot.chargerDevices.length.toString()}台'),
+      ]),
+      TableRow(children: [
+        const Text('充電出力'),
+        Text('${device.power.toString()}kW'),
+      ]),
+      TableRow(children: [
+        const Text('営業時間'),
+        if (device.serviceStartTime == null || device.serviceEndTime == null)
+          const Text('-')
+        else
+          Text('${device.serviceStartTime} - ${device.serviceEndTime}'),
+      ]),
+      TableRow(children: [
+        const Text('定休日'),
+        if (chargerSpot.maintenanceNote.isEmpty ||
+            chargerSpot.maintenanceNote.first == null)
+          const Text('-')
+        else
+          Text(chargerSpot.maintenanceNote.map((e) => e).join('、')),
+      ]),
+    ]);
+  }
+
+  // 地図アプリを開くlink view
+  Widget _openMapAppLinkView(APIChargerSpot chargerSpot) {
+    return GestureDetector(
+      onTap: () {
+        // 地図アプリを開く
+        _notifier.openMapApp(
+          latitude: chargerSpot.latitude,
+          longitude: chargerSpot.longitude,
+        );
+      },
+      child: const Row(
+        children: [
+          Text(
+            '地図アプリで開く',
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.green,
+              color: Colors.green,
+            ),
+          ),
+          Icon(Icons.filter_none, color: Colors.green, size: 16),
+        ],
+      ),
+    );
   }
 
   // 現在の位置情報を更新

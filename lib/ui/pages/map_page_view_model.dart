@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter_map_app/repository/charger_spots_repository.dart';
 import 'package:flutter_map_app/ui/common/custom_marker_icon.dart';
 import 'package:flutter_map_app/ui/pages/map_page_state.dart';
@@ -6,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:openapi/api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'map_page_view_model.g.dart';
 
@@ -25,14 +29,16 @@ enum LocationSettingResult {
 ///
 @riverpod
 class MapPageNotifier extends _$MapPageNotifier {
-  @override
-  MapPageState build() {
-    return const MapPageState();
-  }
+  Timer? _debounceTimer;
 
   // 充電スポットのリポジトリ
   final ChargerSpotsRepository _chargerSpotsRepository =
       ChargerSpotsRepository();
+
+  @override
+  MapPageState build() {
+    return const MapPageState();
+  }
 
   // 位置情報の設定ダイアログを表示するかどうかをチェック
   Future<void> checkLocationSettingDialog() async {
@@ -118,47 +124,80 @@ class MapPageNotifier extends _$MapPageNotifier {
     required LatLng southwest,
     required LatLng northeast,
   }) async {
-    // 最南西（左下）の緯度
-    final swLat = southwest.latitude;
-    // 最南西（左下）の経度
-    final swLng = southwest.longitude;
-    // 最北東（右上）の緯度
-    final neLat = northeast.latitude;
-    // 最北東（右上）の経度
-    final neLng = northeast.longitude;
-
-    final result = await _chargerSpotsRepository.getChargerSpots(
-      swLat: swLat.toString(),
-      swLng: swLng.toString(),
-      neLat: neLat.toString(),
-      neLng: neLng.toString(),
-    );
-
-    // 取得失敗時
-    if (result == null || result.status != APIResponseStatusEnum.ok) {
-      return;
+    // 頻繁に呼ばれるのでデバウンス処理つける
+    if (_debounceTimer != null) {
+      _debounceTimer!.cancel();
     }
-    // 充電スポットのリスト
-    final chargerSpots = result.chargerSpots;
-    final list = List<Marker>.from(state.markersList);
+    _debounceTimer = Timer(const Duration(seconds: 1), () async {
+      // 最南西（左下）の緯度
+      final swLat = southwest.latitude;
+      // 最南西（左下）の経度
+      final swLng = southwest.longitude;
+      // 最北東（右上）の緯度
+      final neLat = northeast.latitude;
+      // 最北東（右上）の経度
+      final neLng = northeast.longitude;
 
-    // 充電スポットのマーカーを作成
-    await Future.wait(chargerSpots.map((spot) async {
-      logger.d(
-          'chargerSpot: name:${spot.name} \n lat:${spot.latitude} \n lng:${spot.longitude}');
-      final marker = Marker(
-        markerId: MarkerId(spot.uuid),
-        position: LatLng(spot.latitude.toDouble(), spot.longitude.toDouble()),
-        infoWindow: InfoWindow(title: spot.name),
-        icon: await CustomMarkerIcon.getChargingSpotIcon(
-          chargerCount: spot.chargerDevices.length,
-        ),
-        onTap: () {
-          logger.d('marker tapped: ${spot.name}');
-        },
+      final result = await _chargerSpotsRepository.getChargerSpots(
+        swLat: swLat.toString(),
+        swLng: swLng.toString(),
+        neLat: neLat.toString(),
+        neLng: neLng.toString(),
       );
-      list.add(marker);
-    }));
-    state = state.copyWith(markersList: list);
+
+      // 取得失敗時
+      if (result == null || result.status != APIResponseStatusEnum.ok) {
+        return;
+      }
+      // 充電スポットのリスト
+      final chargerSpots = result.chargerSpots;
+      final list = List<Marker>.from(state.markersList);
+
+      // 充電スポットのマーカーを作成
+      await Future.wait(chargerSpots.map((spot) async {
+        logger.d(
+            'chargerSpot: name:${spot.name} \n lat:${spot.latitude} \n lng:${spot.longitude}');
+        final marker = Marker(
+          markerId: MarkerId(spot.uuid),
+          position: LatLng(spot.latitude.toDouble(), spot.longitude.toDouble()),
+          infoWindow: InfoWindow(title: spot.name),
+          icon: await CustomMarkerIcon.getChargingSpotIcon(
+            chargerCount: spot.chargerDevices.length,
+          ),
+          onTap: () {
+            logger.d('marker tapped: ${spot.name}');
+            state = state.copyWith(selectedId: spot.uuid);
+          },
+        );
+        list.add(marker);
+      }));
+      // 重複を削除
+      final chargerSpotsList = List<APIChargerSpot>.from(state.chargerSpots);
+      chargerSpotsList.addAll(chargerSpots);
+      final newChargerSpotsList = chargerSpotsList.toSet().toList();
+      state =
+          state.copyWith(markersList: list, chargerSpots: newChargerSpotsList);
+    });
+  }
+
+  // 地図アプリを開く
+  Future<void> openMapApp({
+    required num latitude,
+    required num longitude,
+  }) async {
+    // 地図アプリを開く
+    final googleUrl = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+    final appleUrl =
+        Uri.parse('https://maps.apple.com/?q=$latitude,$longitude');
+
+    if (await canLaunchUrl(googleUrl)) {
+      await launchUrl(
+        googleUrl,
+        mode: LaunchMode.externalApplication,
+      );
+    } else if (Platform.isIOS && await canLaunchUrl(appleUrl)) {
+      await launchUrl(appleUrl);
+    }
   }
 }

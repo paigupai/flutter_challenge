@@ -18,7 +18,7 @@ class MapPageState with _$MapPageState {
     @Default([]) List<Marker> markersList,
     // 充電スポットリスト
     @Default([]) List<APIChargerSpot> chargerSpots,
-    // 選択された充電スポット
-    String? selectedId,
+    // tapされたマーカーのID
+    String? onTapMakerId,
   }) = _MapPageState;
 }

@@ -23,8 +23,8 @@ mixin _$MapPageState {
   List<Marker> get markersList =>
       throw _privateConstructorUsedError; // 充電スポットリスト
   List<APIChargerSpot> get chargerSpots =>
-      throw _privateConstructorUsedError; // 選択された充電スポット
-  String? get selectedId => throw _privateConstructorUsedError;
+      throw _privateConstructorUsedError; // tapされたマーカーのID
+  String? get onTapMakerId => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapPageStateCopyWith<MapPageState> get copyWith =>
@@ -42,7 +42,7 @@ abstract class $MapPageStateCopyWith<$Res> {
       LatLng? currentLocation,
       List<Marker> markersList,
       List<APIChargerSpot> chargerSpots,
-      String? selectedId});
+      String? onTapMakerId});
 }
 
 /// @nodoc
@@ -62,7 +62,7 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
     Object? currentLocation = freezed,
     Object? markersList = null,
     Object? chargerSpots = null,
-    Object? selectedId = freezed,
+    Object? onTapMakerId = freezed,
   }) {
     return _then(_value.copyWith(
       needShowPermissionDialog: null == needShowPermissionDialog
@@ -81,9 +81,9 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
           ? _value.chargerSpots
           : chargerSpots // ignore: cast_nullable_to_non_nullable
               as List<APIChargerSpot>,
-      selectedId: freezed == selectedId
-          ? _value.selectedId
-          : selectedId // ignore: cast_nullable_to_non_nullable
+      onTapMakerId: freezed == onTapMakerId
+          ? _value.onTapMakerId
+          : onTapMakerId // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -102,7 +102,7 @@ abstract class _$$MapPageStateImplCopyWith<$Res>
       LatLng? currentLocation,
       List<Marker> markersList,
       List<APIChargerSpot> chargerSpots,
-      String? selectedId});
+      String? onTapMakerId});
 }
 
 /// @nodoc
@@ -120,7 +120,7 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
     Object? currentLocation = freezed,
     Object? markersList = null,
     Object? chargerSpots = null,
-    Object? selectedId = freezed,
+    Object? onTapMakerId = freezed,
   }) {
     return _then(_$MapPageStateImpl(
       needShowPermissionDialog: null == needShowPermissionDialog
@@ -139,9 +139,9 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
           ? _value._chargerSpots
           : chargerSpots // ignore: cast_nullable_to_non_nullable
               as List<APIChargerSpot>,
-      selectedId: freezed == selectedId
-          ? _value.selectedId
-          : selectedId // ignore: cast_nullable_to_non_nullable
+      onTapMakerId: freezed == onTapMakerId
+          ? _value.onTapMakerId
+          : onTapMakerId // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -155,7 +155,7 @@ class _$MapPageStateImpl implements _MapPageState {
       this.currentLocation,
       final List<Marker> markersList = const [],
       final List<APIChargerSpot> chargerSpots = const [],
-      this.selectedId})
+      this.onTapMakerId})
       : _markersList = markersList,
         _chargerSpots = chargerSpots;
 
@@ -188,13 +188,13 @@ class _$MapPageStateImpl implements _MapPageState {
     return EqualUnmodifiableListView(_chargerSpots);
   }
 
-// 選択された充電スポット
+// tapされたマーカーのID
   @override
-  final String? selectedId;
+  final String? onTapMakerId;
 
   @override
   String toString() {
-    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, currentLocation: $currentLocation, markersList: $markersList, chargerSpots: $chargerSpots, selectedId: $selectedId)';
+    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, currentLocation: $currentLocation, markersList: $markersList, chargerSpots: $chargerSpots, onTapMakerId: $onTapMakerId)';
   }
 
   @override
@@ -211,8 +211,8 @@ class _$MapPageStateImpl implements _MapPageState {
                 .equals(other._markersList, _markersList) &&
             const DeepCollectionEquality()
                 .equals(other._chargerSpots, _chargerSpots) &&
-            (identical(other.selectedId, selectedId) ||
-                other.selectedId == selectedId));
+            (identical(other.onTapMakerId, onTapMakerId) ||
+                other.onTapMakerId == onTapMakerId));
   }
 
   @override
@@ -222,7 +222,7 @@ class _$MapPageStateImpl implements _MapPageState {
       currentLocation,
       const DeepCollectionEquality().hash(_markersList),
       const DeepCollectionEquality().hash(_chargerSpots),
-      selectedId);
+      onTapMakerId);
 
   @JsonKey(ignore: true)
   @override
@@ -237,7 +237,7 @@ abstract class _MapPageState implements MapPageState {
       final LatLng? currentLocation,
       final List<Marker> markersList,
       final List<APIChargerSpot> chargerSpots,
-      final String? selectedId}) = _$MapPageStateImpl;
+      final String? onTapMakerId}) = _$MapPageStateImpl;
 
   @override // 位置情報の設定ダイアログを表示するかどうか
   bool get needShowPermissionDialog;
@@ -247,8 +247,8 @@ abstract class _MapPageState implements MapPageState {
   List<Marker> get markersList;
   @override // 充電スポットリスト
   List<APIChargerSpot> get chargerSpots;
-  @override // 選択された充電スポット
-  String? get selectedId;
+  @override // tapされたマーカーのID
+  String? get onTapMakerId;
   @override
   @JsonKey(ignore: true)
   _$$MapPageStateImplCopyWith<_$MapPageStateImpl> get copyWith =>

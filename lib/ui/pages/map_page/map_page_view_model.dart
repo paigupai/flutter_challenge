@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_map_app/repository/charger_spots_repository.dart';
 import 'package:flutter_map_app/ui/common/custom_marker_icon.dart';
-import 'package:flutter_map_app/ui/pages/map_page_state.dart';
+import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_view_model.dart';
+import 'package:flutter_map_app/ui/pages/map_page/map_page_state.dart';
 import 'package:flutter_map_app/utils/logger.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -166,18 +167,29 @@ class MapPageNotifier extends _$MapPageNotifier {
           ),
           onTap: () {
             logger.d('marker tapped: ${spot.name}');
-            state = state.copyWith(selectedId: spot.uuid);
+            ref
+                .read(chargerSpotCardSwiperNotifierProvider.notifier)
+                .updateSelectedChargerSpot(spot);
+            updateOnTapMakerId(spot.uuid);
           },
         );
         list.add(marker);
       }));
-      // 重複を削除
+
       final chargerSpotsList = List<APIChargerSpot>.from(state.chargerSpots);
       chargerSpotsList.addAll(chargerSpots);
+      // 重複を削除
       final newChargerSpotsList = chargerSpotsList.toSet().toList();
-      state =
-          state.copyWith(markersList: list, chargerSpots: newChargerSpotsList);
+      final newMarkersList = list.toSet().toList();
+
+      state = state.copyWith(
+          markersList: newMarkersList, chargerSpots: newChargerSpotsList);
     });
+  }
+
+  // tapされたマーカーのIDを更新
+  void updateOnTapMakerId(String onTapMakerId) {
+    state = state.copyWith(onTapMakerId: onTapMakerId);
   }
 
   // 地図アプリを開く

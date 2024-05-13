@@ -212,7 +212,6 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
 
   // 充電スポット情報
   Widget _chargerSpotInfo(APIChargerSpot chargerSpot) {
-    final device = chargerSpot.chargerDevices.first;
     return Table(columnWidths: const {
       0: FlexColumnWidth(1),
       1: FlexColumnWidth(2),

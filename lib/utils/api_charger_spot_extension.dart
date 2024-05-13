@@ -6,6 +6,9 @@ import 'package:openapi/api.dart';
 extension APIChargerSpotEx on APIChargerSpot {
   // 営業時間の取得
   String get businessHours {
+    if (chargerSpotServiceTimes.isEmpty) {
+      return '-';
+    }
     final spotServiceTime =
         chargerSpotServiceTimes.firstWhere((element) => element.today);
     final openTime = spotServiceTime.startTime;
@@ -18,6 +21,10 @@ extension APIChargerSpotEx on APIChargerSpot {
 
   // 営業時間内かどうか
   bool get isOpen {
+    // 営業時間が設定されていない場合
+    if (chargerSpotServiceTimes.isEmpty) {
+      return false;
+    }
     final spotServiceTime =
         chargerSpotServiceTimes.firstWhere((element) => element.today);
     final openTime = spotServiceTime.startTime;

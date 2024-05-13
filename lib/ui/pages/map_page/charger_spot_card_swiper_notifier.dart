@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_state.dart';
-import 'package:flutter_map_app/ui/pages/map_page/map_page_view_model.dart';
+import 'package:flutter_map_app/ui/pages/map_page/map_page_notifier.dart';
 import 'package:openapi/api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'charger_spot_card_swiper_view_model.g.dart';
+part 'charger_spot_card_swiper_notifier.g.dart';
 
 ///
 /// 充電スポットカードスワイパーの状態を管理するNotifier

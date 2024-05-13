@@ -1,7 +1,7 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_view_model.dart';
-import 'package:flutter_map_app/ui/pages/map_page/map_page_view_model.dart';
+import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_notifier.dart';
+import 'package:flutter_map_app/ui/pages/map_page/map_page_notifier.dart';
 import 'package:flutter_map_app/utils/api_charger_spot_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_app/main.dart';
 import 'package:flutter_map_app/model/app_model.dart';
 import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper.dart';
-import 'package:flutter_map_app/ui/pages/map_page/map_page_view_model.dart';
+import 'package:flutter_map_app/ui/pages/map_page/map_page_notifier.dart';
 import 'package:flutter_map_app/utils/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';

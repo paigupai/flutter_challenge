@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'charger_spot_card_swiper_view_model.dart';
+part of 'charger_spot_card_swiper_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator

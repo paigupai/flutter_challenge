@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_map_app/repository/charger_spots_repository.dart';
 import 'package:flutter_map_app/ui/common/custom_marker_icon.dart';
-import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_view_model.dart';
+import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_notifier.dart';
 import 'package:flutter_map_app/ui/pages/map_page/map_page_state.dart';
 import 'package:flutter_map_app/utils/logger.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,7 +12,7 @@ import 'package:openapi/api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-part 'map_page_view_model.g.dart';
+part 'map_page_notifier.g.dart';
 
 enum LocationSettingResult {
   // 位置情報が使えない

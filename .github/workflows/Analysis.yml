@@ -16,15 +16,16 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
-      - name: check flutter version
+      - name: Check flutter version
         run: flutter --version
-      - name: install packages
+      - name: Install packages
         run: flutter pub get
 #      - name: run build_runner
 #        run: flutter pub run build_runner build --delete-conflicting-outputs
-      - name: run custom_lint
-        run: dart run custom_lint
-      - name: linter
+      - run: dart pub global activate custom_lint
+      - name: Check format
+        run: dart format -o none --set-exit-if-changed $(find ./lib ./test -name "*.dart" -not \( -name "*.*freezed.dart" -o -name "*.*g.dart" \) )
+      - name: Analyze
         run: flutter analyze lib
 #      - name: Test
 #        run: flutter test

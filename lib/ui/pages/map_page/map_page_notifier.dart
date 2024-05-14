@@ -195,6 +195,11 @@ class MapPageNotifier extends _$MapPageNotifier {
     state = state.copyWith(onTapMakerId: onTapMakerId);
   }
 
+  // 自動検索の更新
+  void updateAutoSearch(bool autoSearch) {
+    state = state.copyWith(autoSearch: autoSearch);
+  }
+
   // 地図アプリを開く
   Future<void> openMapApp({
     required num latitude,

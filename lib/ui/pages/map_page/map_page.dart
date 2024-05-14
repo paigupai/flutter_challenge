@@ -69,6 +69,8 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
           ),
         ]),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+      floatingActionButton: _header(),
     );
   }
 
@@ -101,6 +103,12 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
           await _refreshCurrentLocation();
         },
         onCameraIdle: () async {
+          // 自動検索がオフの場合は何もしない
+          final autoSearch = ref.read(
+              mapPageNotifierProvider.select((value) => value.autoSearch));
+          if (!autoSearch) {
+            return;
+          }
           // カメラの位置が変更された時の処理
           final bounds = await _mapController.getVisibleRegion();
           // 左下と右上の座標を取得
@@ -160,6 +168,95 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
         );
       }
     });
+  }
+
+  // map header
+  Widget _header() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 16),
+        FractionallySizedBox(
+          widthFactor: 0.9,
+          child: GestureDetector(
+            onTap: () async {
+              // 充電スポットを更新
+              final bounds = await _mapController.getVisibleRegion();
+              // 左下と右上の座標を取得
+              final southwest = bounds.southwest;
+              final northeast = bounds.northeast;
+              await _notifier.updateChargingSpot(
+                southwest: southwest,
+                northeast: northeast,
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xffECF9E3),
+                borderRadius: BorderRadius.circular(34),
+              ),
+              padding: const EdgeInsets.only(
+                  left: 27, right: 16, top: 18, bottom: 18),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'このエリアでスポットを検索',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff56C600),
+                    ),
+                  ),
+                  Icon(
+                    Icons.search,
+                    color: Color(0xff56C600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Container(
+            margin: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  '自動検索',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xff56C600),
+                  ),
+                ),
+                Consumer(builder: (context, ref, _) {
+                  final autoSearch =
+                      ref.watch(mapPageNotifierProvider.select((value) {
+                    return value.autoSearch;
+                  }));
+                  return Switch(
+                    value: autoSearch,
+                    onChanged: (value) {
+                      ref
+                          .read(mapPageNotifierProvider.notifier)
+                          .updateAutoSearch(value);
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   // tapされた充電スポットを更新

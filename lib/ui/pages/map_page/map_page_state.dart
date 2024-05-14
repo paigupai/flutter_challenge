@@ -18,5 +18,7 @@ class MapPageState with _$MapPageState {
     @Default([]) List<APIChargerSpot> chargerSpotsList,
     // tapされたマーカーのID
     String? onTapMakerId,
+    // 自動検索
+    @Default(true) bool autoSearch,
   }) = _MapPageState;
 }

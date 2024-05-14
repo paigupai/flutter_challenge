@@ -12,12 +12,10 @@ class MapPageState with _$MapPageState {
   const factory MapPageState({
     // 位置情報の設定ダイアログを表示するかどうか
     @Default(false) bool needShowPermissionDialog,
-    // 現在地
-    LatLng? currentLocation,
-    // マーカーリスト
-    @Default([]) List<Marker> markersList,
+    // マーカーset
+    @Default(<Marker>{}) Set<Marker> markersSet,
     // 充電スポットリスト
-    @Default([]) List<APIChargerSpot> chargerSpots,
+    @Default([]) List<APIChargerSpot> chargerSpotsList,
     // tapされたマーカーのID
     String? onTapMakerId,
   }) = _MapPageState;

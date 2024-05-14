@@ -13,6 +13,6 @@ class ChargerSpotCardSwiperState with _$ChargerSpotCardSwiperState {
     // card swiper move中かどうか
     @Default(false) bool isSwiping,
     // card swiperを表示するかどうか
-    @Default(false) bool needShowCardSwiper,
+    @Default(true) bool needShowCardSwiper,
   }) = _ChargerSpotCardSwiperState;
 }

@@ -5,7 +5,9 @@ import 'package:flutter_map_app/repository/charger_spots_repository.dart';
 import 'package:flutter_map_app/ui/common/custom_marker_icon.dart';
 import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_notifier.dart';
 import 'package:flutter_map_app/ui/pages/map_page/map_page_state.dart';
+import 'package:flutter_map_app/utils/list_extension.dart';
 import 'package:flutter_map_app/utils/logger.dart';
+import 'package:flutter_map_app/utils/set_extension.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:openapi/api.dart';
@@ -113,9 +115,9 @@ class MapPageNotifier extends _$MapPageNotifier {
       infoWindow: const InfoWindow(title: '現在地'),
       icon: await CustomMarkerIcon.getCurrentLocationIcon(),
     );
-    final list = List<Marker>.from(state.markersList);
-    list.add(currentLocationMarker);
-    state = state.copyWith(markersList: list, currentLocation: currentLocation);
+    final set = Set<Marker>.from(state.markersSet);
+    final updatedSet = SetEx.addMarker(set, currentLocationMarker);
+    state = state.copyWith(markersSet: updatedSet);
   }
 
   // 充電スポットのmarkerを更新
@@ -129,7 +131,7 @@ class MapPageNotifier extends _$MapPageNotifier {
     if (_debounceTimer != null) {
       _debounceTimer!.cancel();
     }
-    _debounceTimer = Timer(const Duration(seconds: 1), () async {
+    _debounceTimer = Timer(const Duration(microseconds: 600), () async {
       // 最南西（左下）の緯度
       final swLat = southwest.latitude;
       // 最南西（左下）の経度
@@ -152,7 +154,7 @@ class MapPageNotifier extends _$MapPageNotifier {
       }
       // 充電スポットのリスト
       final chargerSpots = result.chargerSpots;
-      final list = List<Marker>.from(state.markersList);
+      var updatedSet = Set<Marker>.from(state.markersSet);
 
       // 充電スポットのマーカーを作成
       await Future.wait(chargerSpots.map((spot) async {
@@ -173,17 +175,18 @@ class MapPageNotifier extends _$MapPageNotifier {
             updateOnTapMakerId(spot.uuid);
           },
         );
-        list.add(marker);
+        updatedSet = SetEx.addMarker(updatedSet, marker);
       }));
 
-      final chargerSpotsList = List<APIChargerSpot>.from(state.chargerSpots);
-      chargerSpotsList.addAll(chargerSpots);
+      final chargerSpotsList =
+          List<APIChargerSpot>.from(state.chargerSpotsList);
       // 重複を削除
-      final newChargerSpotsList = chargerSpotsList.toSet().toList();
-      final newMarkersList = list.toSet().toList();
+      chargerSpotsList.addAll(chargerSpots);
+      final updatedChargerSpotsList =
+          ListEx.uniqueChargerSpot(chargerSpotsList);
 
       state = state.copyWith(
-          markersList: newMarkersList, chargerSpots: newChargerSpotsList);
+          markersSet: updatedSet, chargerSpotsList: updatedChargerSpotsList);
     });
   }
 

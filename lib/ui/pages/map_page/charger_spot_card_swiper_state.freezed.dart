@@ -125,7 +125,7 @@ class _$ChargerSpotCardSwiperStateImpl implements _ChargerSpotCardSwiperState {
   const _$ChargerSpotCardSwiperStateImpl(
       {this.selectedCardId,
       this.isSwiping = false,
-      this.needShowCardSwiper = false});
+      this.needShowCardSwiper = true});
 
 // 選択中の充電スポットカードのID
   @override

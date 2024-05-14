@@ -11,7 +11,13 @@ import 'package:openapi/api.dart';
 /// 充電スポットカードのスワイパー
 ///
 class ChargerSpotCardSwiper extends ConsumerStatefulWidget {
-  const ChargerSpotCardSwiper({super.key});
+  const ChargerSpotCardSwiper({
+    required this.onRefreshCurrentLocation,
+    super.key,
+  });
+
+  // 現在地を更新するcallback
+  final VoidCallback onRefreshCurrentLocation;
 
   @override
   ConsumerState createState() => _ChargerSpotCardSwiperState();
@@ -41,37 +47,70 @@ class _ChargerSpotCardSwiperState extends ConsumerState<ChargerSpotCardSwiper> {
     _updateChargerSpotCardSwiperListener();
     // 充電スポットのリスト
     final chargerSpots = ref.watch(mapPageNotifierProvider.select(
-      (value) => value.chargerSpots,
+      (value) => value.chargerSpotsList,
     ));
 
+    // 充電スポットcard swiperを表示するかどうか
+    var needShowCardSwiper = ref.watch(
+      chargerSpotCardSwiperNotifierProvider.select(
+        (value) => value.needShowCardSwiper,
+      ),
+    );
+    // 充電スポットがない場合は何も表示しない
     if (chargerSpots.isEmpty) {
-      return const SizedBox.shrink();
+      needShowCardSwiper = false;
     }
 
+    final height = MediaQuery.sizeOf(context).height;
     return Align(
       alignment: Alignment.bottomCenter,
-      child: FractionallySizedBox(
-        heightFactor: 0.3,
-        child: Swiper(
-          itemCount: chargerSpots.length,
-          loop: false,
-          viewportFraction: 0.85,
-          controller: _swiperController,
-          onIndexChanged: (index) {
-            final isSwiping = ref.read(chargerSpotCardSwiperNotifierProvider
-                .select((value) => value.isSwiping));
-            // スワイプ中は処理しない
-            if (isSwiping) {
-              return;
-            }
-            // カードがスワイプされた時の処理
-            _cardNotifier.updateOnTapMakerId(chargerSpots[index]);
-          },
-          itemBuilder: (context, index) {
-            final chargerSpot = chargerSpots[index];
-            return chargerSpotCardSwiper(chargerSpot);
-          },
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              onPressed: widget.onRefreshCurrentLocation,
+              icon: SvgPicture.asset(
+                'assets/icons/location_button_icon.svg',
+                width: 62,
+                height: 62,
+              ),
+            ),
+          ),
+          AnimatedCrossFade(
+            // 充電スポットがない場合は何も表示しない
+            firstChild: const SizedBox.shrink(),
+            secondChild: SizedBox(
+              height: height * 0.3,
+              child: Swiper(
+                itemCount: chargerSpots.length,
+                loop: false,
+                viewportFraction: 0.85,
+                controller: _swiperController,
+                onIndexChanged: (index) {
+                  final isSwiping = ref.read(
+                      chargerSpotCardSwiperNotifierProvider
+                          .select((value) => value.isSwiping));
+                  // スワイプ中は処理しない
+                  if (isSwiping) {
+                    return;
+                  }
+                  // カードがスワイプされた時の処理
+                  _cardNotifier.updateOnTapMakerId(chargerSpots[index]);
+                },
+                itemBuilder: (context, index) {
+                  final chargerSpot = chargerSpots[index];
+                  return chargerSpotCardSwiper(chargerSpot);
+                },
+              ),
+            ),
+            crossFadeState: needShowCardSwiper
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 300),
+          ),
+        ],
       ),
     );
   }
@@ -229,8 +268,8 @@ class _ChargerSpotCardSwiperState extends ConsumerState<ChargerSpotCardSwiper> {
       if (next == null) {
         return;
       }
-      final chargerSpots = ref
-          .read(mapPageNotifierProvider.select((value) => value.chargerSpots));
+      final chargerSpots = ref.read(
+          mapPageNotifierProvider.select((value) => value.chargerSpotsList));
       final index = chargerSpots.indexWhere((element) => element.uuid == next);
 
       _cardNotifier.updateIsSwiping(true);

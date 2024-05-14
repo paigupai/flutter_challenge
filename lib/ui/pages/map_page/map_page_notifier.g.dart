@@ -6,7 +6,7 @@ part of 'map_page_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$mapPageNotifierHash() => r'1c91a3b8eb95d83ece2ea1376ba6b8ff1eefaf60';
+String _$mapPageNotifierHash() => r'740ecbbb31b2d9df7090fed3e96e1089406631f6';
 
 ///
 ///  地図ページの状態を管理するNotifier

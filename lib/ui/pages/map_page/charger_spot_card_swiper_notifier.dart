@@ -22,7 +22,8 @@ class ChargerSpotCardSwiperNotifier extends _$ChargerSpotCardSwiperNotifier {
   // 現在選択されている充電スポットを更新
   // card swiperで選択された充電スポットのマーカーを更新
   void updateSelectedChargerSpot(APIChargerSpot chargerSpot) {
-    state = state.copyWith(selectedCardId: chargerSpot.uuid);
+    state = state.copyWith(
+        needShowCardSwiper: true, selectedCardId: chargerSpot.uuid);
   }
 
   // MarkerIdを更新
@@ -41,5 +42,10 @@ class ChargerSpotCardSwiperNotifier extends _$ChargerSpotCardSwiperNotifier {
   // card swiper move中かどうかを更新
   void updateIsSwiping(bool isSwiping) {
     state = state.copyWith(isSwiping: isSwiping);
+  }
+
+  // card swiperを表示するかどうかを更新
+  void updateNeedShowCardSwiper(bool needShowCardSwiper) {
+    state = state.copyWith(needShowCardSwiper: needShowCardSwiper);
   }
 }

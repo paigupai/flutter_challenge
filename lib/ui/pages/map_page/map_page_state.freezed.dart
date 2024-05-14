@@ -18,11 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MapPageState {
 // 位置情報の設定ダイアログを表示するかどうか
   bool get needShowPermissionDialog =>
-      throw _privateConstructorUsedError; // 現在地
-  LatLng? get currentLocation => throw _privateConstructorUsedError; // マーカーリスト
-  List<Marker> get markersList =>
-      throw _privateConstructorUsedError; // 充電スポットリスト
-  List<APIChargerSpot> get chargerSpots =>
+      throw _privateConstructorUsedError; // マーカーset
+  Set<Marker> get markersSet => throw _privateConstructorUsedError; // 充電スポットリスト
+  List<APIChargerSpot> get chargerSpotsList =>
       throw _privateConstructorUsedError; // tapされたマーカーのID
   String? get onTapMakerId => throw _privateConstructorUsedError;
 
@@ -39,9 +37,8 @@ abstract class $MapPageStateCopyWith<$Res> {
   @useResult
   $Res call(
       {bool needShowPermissionDialog,
-      LatLng? currentLocation,
-      List<Marker> markersList,
-      List<APIChargerSpot> chargerSpots,
+      Set<Marker> markersSet,
+      List<APIChargerSpot> chargerSpotsList,
       String? onTapMakerId});
 }
 
@@ -59,9 +56,8 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
   @override
   $Res call({
     Object? needShowPermissionDialog = null,
-    Object? currentLocation = freezed,
-    Object? markersList = null,
-    Object? chargerSpots = null,
+    Object? markersSet = null,
+    Object? chargerSpotsList = null,
     Object? onTapMakerId = freezed,
   }) {
     return _then(_value.copyWith(
@@ -69,17 +65,13 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
           ? _value.needShowPermissionDialog
           : needShowPermissionDialog // ignore: cast_nullable_to_non_nullable
               as bool,
-      currentLocation: freezed == currentLocation
-          ? _value.currentLocation
-          : currentLocation // ignore: cast_nullable_to_non_nullable
-              as LatLng?,
-      markersList: null == markersList
-          ? _value.markersList
-          : markersList // ignore: cast_nullable_to_non_nullable
-              as List<Marker>,
-      chargerSpots: null == chargerSpots
-          ? _value.chargerSpots
-          : chargerSpots // ignore: cast_nullable_to_non_nullable
+      markersSet: null == markersSet
+          ? _value.markersSet
+          : markersSet // ignore: cast_nullable_to_non_nullable
+              as Set<Marker>,
+      chargerSpotsList: null == chargerSpotsList
+          ? _value.chargerSpotsList
+          : chargerSpotsList // ignore: cast_nullable_to_non_nullable
               as List<APIChargerSpot>,
       onTapMakerId: freezed == onTapMakerId
           ? _value.onTapMakerId
@@ -99,9 +91,8 @@ abstract class _$$MapPageStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {bool needShowPermissionDialog,
-      LatLng? currentLocation,
-      List<Marker> markersList,
-      List<APIChargerSpot> chargerSpots,
+      Set<Marker> markersSet,
+      List<APIChargerSpot> chargerSpotsList,
       String? onTapMakerId});
 }
 
@@ -117,9 +108,8 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? needShowPermissionDialog = null,
-    Object? currentLocation = freezed,
-    Object? markersList = null,
-    Object? chargerSpots = null,
+    Object? markersSet = null,
+    Object? chargerSpotsList = null,
     Object? onTapMakerId = freezed,
   }) {
     return _then(_$MapPageStateImpl(
@@ -127,17 +117,13 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
           ? _value.needShowPermissionDialog
           : needShowPermissionDialog // ignore: cast_nullable_to_non_nullable
               as bool,
-      currentLocation: freezed == currentLocation
-          ? _value.currentLocation
-          : currentLocation // ignore: cast_nullable_to_non_nullable
-              as LatLng?,
-      markersList: null == markersList
-          ? _value._markersList
-          : markersList // ignore: cast_nullable_to_non_nullable
-              as List<Marker>,
-      chargerSpots: null == chargerSpots
-          ? _value._chargerSpots
-          : chargerSpots // ignore: cast_nullable_to_non_nullable
+      markersSet: null == markersSet
+          ? _value._markersSet
+          : markersSet // ignore: cast_nullable_to_non_nullable
+              as Set<Marker>,
+      chargerSpotsList: null == chargerSpotsList
+          ? _value._chargerSpotsList
+          : chargerSpotsList // ignore: cast_nullable_to_non_nullable
               as List<APIChargerSpot>,
       onTapMakerId: freezed == onTapMakerId
           ? _value.onTapMakerId
@@ -152,40 +138,37 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
 class _$MapPageStateImpl implements _MapPageState {
   const _$MapPageStateImpl(
       {this.needShowPermissionDialog = false,
-      this.currentLocation,
-      final List<Marker> markersList = const [],
-      final List<APIChargerSpot> chargerSpots = const [],
+      final Set<Marker> markersSet = const <Marker>{},
+      final List<APIChargerSpot> chargerSpotsList = const [],
       this.onTapMakerId})
-      : _markersList = markersList,
-        _chargerSpots = chargerSpots;
+      : _markersSet = markersSet,
+        _chargerSpotsList = chargerSpotsList;
 
 // 位置情報の設定ダイアログを表示するかどうか
   @override
   @JsonKey()
   final bool needShowPermissionDialog;
-// 現在地
-  @override
-  final LatLng? currentLocation;
-// マーカーリスト
-  final List<Marker> _markersList;
-// マーカーリスト
+// マーカーset
+  final Set<Marker> _markersSet;
+// マーカーset
   @override
   @JsonKey()
-  List<Marker> get markersList {
-    if (_markersList is EqualUnmodifiableListView) return _markersList;
+  Set<Marker> get markersSet {
+    if (_markersSet is EqualUnmodifiableSetView) return _markersSet;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_markersList);
+    return EqualUnmodifiableSetView(_markersSet);
   }
 
 // 充電スポットリスト
-  final List<APIChargerSpot> _chargerSpots;
+  final List<APIChargerSpot> _chargerSpotsList;
 // 充電スポットリスト
   @override
   @JsonKey()
-  List<APIChargerSpot> get chargerSpots {
-    if (_chargerSpots is EqualUnmodifiableListView) return _chargerSpots;
+  List<APIChargerSpot> get chargerSpotsList {
+    if (_chargerSpotsList is EqualUnmodifiableListView)
+      return _chargerSpotsList;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_chargerSpots);
+    return EqualUnmodifiableListView(_chargerSpotsList);
   }
 
 // tapされたマーカーのID
@@ -194,7 +177,7 @@ class _$MapPageStateImpl implements _MapPageState {
 
   @override
   String toString() {
-    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, currentLocation: $currentLocation, markersList: $markersList, chargerSpots: $chargerSpots, onTapMakerId: $onTapMakerId)';
+    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, markersSet: $markersSet, chargerSpotsList: $chargerSpotsList, onTapMakerId: $onTapMakerId)';
   }
 
   @override
@@ -205,12 +188,10 @@ class _$MapPageStateImpl implements _MapPageState {
             (identical(
                     other.needShowPermissionDialog, needShowPermissionDialog) ||
                 other.needShowPermissionDialog == needShowPermissionDialog) &&
-            (identical(other.currentLocation, currentLocation) ||
-                other.currentLocation == currentLocation) &&
             const DeepCollectionEquality()
-                .equals(other._markersList, _markersList) &&
+                .equals(other._markersSet, _markersSet) &&
             const DeepCollectionEquality()
-                .equals(other._chargerSpots, _chargerSpots) &&
+                .equals(other._chargerSpotsList, _chargerSpotsList) &&
             (identical(other.onTapMakerId, onTapMakerId) ||
                 other.onTapMakerId == onTapMakerId));
   }
@@ -219,9 +200,8 @@ class _$MapPageStateImpl implements _MapPageState {
   int get hashCode => Object.hash(
       runtimeType,
       needShowPermissionDialog,
-      currentLocation,
-      const DeepCollectionEquality().hash(_markersList),
-      const DeepCollectionEquality().hash(_chargerSpots),
+      const DeepCollectionEquality().hash(_markersSet),
+      const DeepCollectionEquality().hash(_chargerSpotsList),
       onTapMakerId);
 
   @JsonKey(ignore: true)
@@ -234,19 +214,16 @@ class _$MapPageStateImpl implements _MapPageState {
 abstract class _MapPageState implements MapPageState {
   const factory _MapPageState(
       {final bool needShowPermissionDialog,
-      final LatLng? currentLocation,
-      final List<Marker> markersList,
-      final List<APIChargerSpot> chargerSpots,
+      final Set<Marker> markersSet,
+      final List<APIChargerSpot> chargerSpotsList,
       final String? onTapMakerId}) = _$MapPageStateImpl;
 
   @override // 位置情報の設定ダイアログを表示するかどうか
   bool get needShowPermissionDialog;
-  @override // 現在地
-  LatLng? get currentLocation;
-  @override // マーカーリスト
-  List<Marker> get markersList;
+  @override // マーカーset
+  Set<Marker> get markersSet;
   @override // 充電スポットリスト
-  List<APIChargerSpot> get chargerSpots;
+  List<APIChargerSpot> get chargerSpotsList;
   @override // tapされたマーカーのID
   String? get onTapMakerId;
   @override

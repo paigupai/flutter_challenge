@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_app/main.dart';
 import 'package:flutter_map_app/model/app_model.dart';
 import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper.dart';
+import 'package:flutter_map_app/ui/pages/map_page/charger_spot_card_swiper_notifier.dart';
 import 'package:flutter_map_app/ui/pages/map_page/map_page_notifier.dart';
 import 'package:flutter_map_app/utils/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 ///
@@ -64,16 +64,10 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
       body: SafeArea(
         child: Stack(children: [
           _buildMap(),
-          const ChargerSpotCardSwiper(),
+          ChargerSpotCardSwiper(
+            onRefreshCurrentLocation: _refreshCurrentLocation,
+          ),
         ]),
-      ),
-      floatingActionButton: IconButton(
-        onPressed: _refreshCurrentLocation,
-        icon: SvgPicture.asset(
-          'assets/icons/location_button_icon.svg',
-          width: 62,
-          height: 62,
-        ),
       ),
     );
   }
@@ -84,8 +78,8 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
     final currentLocation = getIt<AppModel>().currentLocation;
     return Consumer(builder: (context, ref, _) {
       // マーカーの取得
-      final markersList = ref.watch(mapPageNotifierProvider.select((value) {
-        return value.markersList;
+      final markersSet = ref.watch(mapPageNotifierProvider.select((value) {
+        return value.markersSet;
       }));
       return GoogleMap(
         mapType: MapType.normal,
@@ -94,6 +88,12 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
           target: currentLocation,
           zoom: 15.0,
         ),
+        onTap: (position) {
+          // card swiperを非表示
+          ref
+              .read(chargerSpotCardSwiperNotifierProvider.notifier)
+              .updateNeedShowCardSwiper(false);
+        },
         onMapCreated: (GoogleMapController controller) async {
           _mapController = controller;
           // 位置情報の設定ダイアログを表示するかどうかをチェック
@@ -111,7 +111,7 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
             northeast: northeast,
           );
         },
-        markers: markersList.toSet(),
+        markers: markersSet,
       );
     });
   }
@@ -170,8 +170,8 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
         return;
       }
 
-      final chargerSpots = ref
-          .read(mapPageNotifierProvider.select((value) => value.chargerSpots));
+      final chargerSpots = ref.read(
+          mapPageNotifierProvider.select((value) => value.chargerSpotsList));
       final onTapChargerSpot =
           chargerSpots.firstWhere((element) => element.uuid == next);
 
@@ -189,6 +189,4 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
       }
     });
   }
-
-  // 選択中の充電スポットカードのIDを更新
 }

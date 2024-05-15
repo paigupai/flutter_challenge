@@ -1,3 +1,4 @@
+import 'package:flutter_map_app/utils/logger.dart';
 import 'package:openapi/api.dart';
 
 ///
@@ -25,8 +26,15 @@ extension APIChargerSpotEx on APIChargerSpot {
     if (chargerSpotServiceTimes.isEmpty) {
       return false;
     }
-    final spotServiceTime =
-        chargerSpotServiceTimes.firstWhere((element) => element.today);
+    APIChargerSpotServiceTime spotServiceTime;
+    try {
+      spotServiceTime =
+          chargerSpotServiceTimes.firstWhere((element) => element.today);
+    } catch (e) {
+      logger.w('APIChargerSpotServiceTime.today is not found');
+      return false;
+    }
+
     final openTime = spotServiceTime.startTime;
     final closeTime = spotServiceTime.endTime;
     if (openTime == null || closeTime == null) {

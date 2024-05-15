@@ -103,7 +103,7 @@ class MapPageNotifier extends _$MapPageNotifier {
       return null;
     }
     final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+        desiredAccuracy: LocationAccuracy.medium);
     return LatLng(position.latitude, position.longitude);
   }
 
@@ -141,15 +141,24 @@ class MapPageNotifier extends _$MapPageNotifier {
       // 最北東（右上）の経度
       final neLng = northeast.longitude;
 
-      final result = await _chargerSpotsRepository.getChargerSpots(
-        swLat: swLat.toString(),
-        swLng: swLng.toString(),
-        neLat: neLat.toString(),
-        neLng: neLng.toString(),
-      );
+      APIResponse? result;
+      try {
+        result = await _chargerSpotsRepository.getChargerSpots(
+          swLat: swLat.toString(),
+          swLng: swLng.toString(),
+          neLat: neLat.toString(),
+          neLng: neLng.toString(),
+        );
+      } catch (e) {
+        logger.w('error: $e');
+      }
 
       // 取得失敗時
       if (result == null || result.status != APIResponseStatusEnum.ok) {
+        return;
+      }
+      // 充電スポットがない場合
+      if (result.chargerSpots.isEmpty) {
         return;
       }
       // 充電スポットのリスト

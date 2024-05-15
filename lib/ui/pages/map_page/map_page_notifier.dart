@@ -220,13 +220,17 @@ class MapPageNotifier extends _$MapPageNotifier {
     final appleUrl =
         Uri.parse('https://maps.apple.com/?q=$latitude,$longitude');
 
+    // iOSの場合はApple Mapを開く
+    if (Platform.isIOS && await canLaunchUrl(appleUrl)) {
+      await launchUrl(appleUrl);
+    }
+
+    // それ以外の場合はGoogle Mapを開く
     if (await canLaunchUrl(googleUrl)) {
       await launchUrl(
         googleUrl,
         mode: LaunchMode.externalApplication,
       );
-    } else if (Platform.isIOS && await canLaunchUrl(appleUrl)) {
-      await launchUrl(appleUrl);
     }
   }
 }

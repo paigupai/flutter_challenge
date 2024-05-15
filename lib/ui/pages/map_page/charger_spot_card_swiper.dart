@@ -101,7 +101,7 @@ class _ChargerSpotCardSwiperState extends ConsumerState<ChargerSpotCardSwiper> {
                 },
                 itemBuilder: (context, index) {
                   final chargerSpot = chargerSpots[index];
-                  return chargerSpotCardSwiper(chargerSpot);
+                  return _chargerSpotCardSwiper(chargerSpot);
                 },
               ),
             ),
@@ -116,7 +116,7 @@ class _ChargerSpotCardSwiperState extends ConsumerState<ChargerSpotCardSwiper> {
   }
 
   // 充電スポットカードウィジェット
-  Widget chargerSpotCardSwiper(APIChargerSpot chargerSpot) {
+  Widget _chargerSpotCardSwiper(APIChargerSpot chargerSpot) {
     return Card(
       color: Colors.white,
       child: Column(

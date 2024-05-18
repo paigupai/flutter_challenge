@@ -48,7 +48,16 @@ class MapPageState extends ConsumerState<MapPage> with WidgetsBindingObserver {
       logger.d('App is back to foreground');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (ModalRoute.of(context)?.isCurrent ?? false) {
-          _refreshCurrentLocation();
+          // 位置情報の設定有効化行うているかどうか
+          final isEnableLocationSetting =
+              ref.read(mapPageNotifierProvider.select((value) {
+            return value.isEnableLocationSetting;
+          }));
+          if (isEnableLocationSetting) {
+            // 位置情報の設定有効化完了
+            _notifier.updateIsEnableLocationSetting(false);
+            _refreshCurrentLocation();
+          }
         }
       });
     }

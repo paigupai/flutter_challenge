@@ -40,6 +40,11 @@ class MapPageNotifier extends _$MapPageNotifier {
 
   @override
   MapPageState build() {
+    ref.onDispose(() {
+      // タイマーをキャンセル
+      _debounceTimer?.cancel();
+    });
+
     return const MapPageState();
   }
 
@@ -59,6 +64,8 @@ class MapPageNotifier extends _$MapPageNotifier {
     if (locationResult == LocationSettingResult.enabled) {
       return;
     }
+    // 位置情報の設定有効化を行う
+    state = state.copyWith(isEnableLocationSetting: true);
     if (locationResult == LocationSettingResult.serviceDisabled) {
       await Geolocator.openLocationSettings();
     } else {
@@ -190,9 +197,11 @@ class MapPageNotifier extends _$MapPageNotifier {
       final chargerSpotsList =
           List<APIChargerSpot>.from(state.chargerSpotsList);
       // 重複を削除
-      chargerSpotsList.addAll(chargerSpots);
+      final maxChargerSpots = chargerSpotsList + chargerSpots;
+      final needUpdateChargerSpotsList =
+          ListEx.uniqueChargerSpot(maxChargerSpots);
       final updatedChargerSpotsList =
-          ListEx.uniqueChargerSpot(chargerSpotsList);
+          chargerSpotsList + needUpdateChargerSpotsList;
 
       state = state.copyWith(
           markersSet: updatedSet, chargerSpotsList: updatedChargerSpotsList);
@@ -232,5 +241,10 @@ class MapPageNotifier extends _$MapPageNotifier {
         mode: LaunchMode.externalApplication,
       );
     }
+  }
+
+  // 位置情報の設定有効化行うているかどうかを更新
+  void updateIsEnableLocationSetting(bool isEnableLocationSetting) {
+    state = state.copyWith(isEnableLocationSetting: isEnableLocationSetting);
   }
 }

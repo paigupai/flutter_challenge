@@ -23,7 +23,9 @@ mixin _$MapPageState {
   List<APIChargerSpot> get chargerSpotsList =>
       throw _privateConstructorUsedError; // tapされたマーカーのID
   String? get onTapMakerId => throw _privateConstructorUsedError; // 自動検索
-  bool get autoSearch => throw _privateConstructorUsedError;
+  bool get autoSearch =>
+      throw _privateConstructorUsedError; // 位置情報の設定有効化行うているかどうか
+  bool get isEnableLocationSetting => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MapPageStateCopyWith<MapPageState> get copyWith =>
@@ -41,7 +43,8 @@ abstract class $MapPageStateCopyWith<$Res> {
       Set<Marker> markersSet,
       List<APIChargerSpot> chargerSpotsList,
       String? onTapMakerId,
-      bool autoSearch});
+      bool autoSearch,
+      bool isEnableLocationSetting});
 }
 
 /// @nodoc
@@ -62,6 +65,7 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
     Object? chargerSpotsList = null,
     Object? onTapMakerId = freezed,
     Object? autoSearch = null,
+    Object? isEnableLocationSetting = null,
   }) {
     return _then(_value.copyWith(
       needShowPermissionDialog: null == needShowPermissionDialog
@@ -84,6 +88,10 @@ class _$MapPageStateCopyWithImpl<$Res, $Val extends MapPageState>
           ? _value.autoSearch
           : autoSearch // ignore: cast_nullable_to_non_nullable
               as bool,
+      isEnableLocationSetting: null == isEnableLocationSetting
+          ? _value.isEnableLocationSetting
+          : isEnableLocationSetting // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -101,7 +109,8 @@ abstract class _$$MapPageStateImplCopyWith<$Res>
       Set<Marker> markersSet,
       List<APIChargerSpot> chargerSpotsList,
       String? onTapMakerId,
-      bool autoSearch});
+      bool autoSearch,
+      bool isEnableLocationSetting});
 }
 
 /// @nodoc
@@ -120,6 +129,7 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
     Object? chargerSpotsList = null,
     Object? onTapMakerId = freezed,
     Object? autoSearch = null,
+    Object? isEnableLocationSetting = null,
   }) {
     return _then(_$MapPageStateImpl(
       needShowPermissionDialog: null == needShowPermissionDialog
@@ -142,6 +152,10 @@ class __$$MapPageStateImplCopyWithImpl<$Res>
           ? _value.autoSearch
           : autoSearch // ignore: cast_nullable_to_non_nullable
               as bool,
+      isEnableLocationSetting: null == isEnableLocationSetting
+          ? _value.isEnableLocationSetting
+          : isEnableLocationSetting // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -154,7 +168,8 @@ class _$MapPageStateImpl implements _MapPageState {
       final Set<Marker> markersSet = const <Marker>{},
       final List<APIChargerSpot> chargerSpotsList = const [],
       this.onTapMakerId,
-      this.autoSearch = true})
+      this.autoSearch = true,
+      this.isEnableLocationSetting = false})
       : _markersSet = markersSet,
         _chargerSpotsList = chargerSpotsList;
 
@@ -192,10 +207,14 @@ class _$MapPageStateImpl implements _MapPageState {
   @override
   @JsonKey()
   final bool autoSearch;
+// 位置情報の設定有効化行うているかどうか
+  @override
+  @JsonKey()
+  final bool isEnableLocationSetting;
 
   @override
   String toString() {
-    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, markersSet: $markersSet, chargerSpotsList: $chargerSpotsList, onTapMakerId: $onTapMakerId, autoSearch: $autoSearch)';
+    return 'MapPageState(needShowPermissionDialog: $needShowPermissionDialog, markersSet: $markersSet, chargerSpotsList: $chargerSpotsList, onTapMakerId: $onTapMakerId, autoSearch: $autoSearch, isEnableLocationSetting: $isEnableLocationSetting)';
   }
 
   @override
@@ -213,7 +232,10 @@ class _$MapPageStateImpl implements _MapPageState {
             (identical(other.onTapMakerId, onTapMakerId) ||
                 other.onTapMakerId == onTapMakerId) &&
             (identical(other.autoSearch, autoSearch) ||
-                other.autoSearch == autoSearch));
+                other.autoSearch == autoSearch) &&
+            (identical(
+                    other.isEnableLocationSetting, isEnableLocationSetting) ||
+                other.isEnableLocationSetting == isEnableLocationSetting));
   }
 
   @override
@@ -223,7 +245,8 @@ class _$MapPageStateImpl implements _MapPageState {
       const DeepCollectionEquality().hash(_markersSet),
       const DeepCollectionEquality().hash(_chargerSpotsList),
       onTapMakerId,
-      autoSearch);
+      autoSearch,
+      isEnableLocationSetting);
 
   @JsonKey(ignore: true)
   @override
@@ -238,7 +261,8 @@ abstract class _MapPageState implements MapPageState {
       final Set<Marker> markersSet,
       final List<APIChargerSpot> chargerSpotsList,
       final String? onTapMakerId,
-      final bool autoSearch}) = _$MapPageStateImpl;
+      final bool autoSearch,
+      final bool isEnableLocationSetting}) = _$MapPageStateImpl;
 
   @override // 位置情報の設定ダイアログを表示するかどうか
   bool get needShowPermissionDialog;
@@ -250,6 +274,8 @@ abstract class _MapPageState implements MapPageState {
   String? get onTapMakerId;
   @override // 自動検索
   bool get autoSearch;
+  @override // 位置情報の設定有効化行うているかどうか
+  bool get isEnableLocationSetting;
   @override
   @JsonKey(ignore: true)
   _$$MapPageStateImplCopyWith<_$MapPageStateImpl> get copyWith =>

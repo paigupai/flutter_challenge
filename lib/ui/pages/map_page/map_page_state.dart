@@ -20,5 +20,7 @@ class MapPageState with _$MapPageState {
     String? onTapMakerId,
     // 自動検索
     @Default(true) bool autoSearch,
+    // 位置情報の設定有効化行うているかどうか
+    @Default(false) bool isEnableLocationSetting,
   }) = _MapPageState;
 }

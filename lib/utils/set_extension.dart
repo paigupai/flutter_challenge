@@ -16,17 +16,12 @@ class SetEx {
       return markers;
     }
 
-    var canAdd = true;
-    for (var element in markers) {
-      // 既に同じmarkerIdがある場合は追加しない
-      if (element.markerId.value == marker.markerId.value) {
-        canAdd = false;
-      }
+    final markerIds = markers.map((e) => e.markerId.value).toList();
+    // 既に同じmarkerIdが存在する場合は追加しない
+    if (markerIds.contains(marker.markerId.value)) {
+      return markers;
     }
-
-    if (canAdd) {
-      markers.add(marker);
-    }
+    markers.add(marker);
     return markers;
   }
 }

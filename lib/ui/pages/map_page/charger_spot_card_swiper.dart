@@ -61,7 +61,6 @@ class _ChargerSpotCardSwiperState extends ConsumerState<ChargerSpotCardSwiper> {
       needShowCardSwiper = false;
     }
 
-    final height = MediaQuery.sizeOf(context).height;
     return Align(
       alignment: Alignment.bottomCenter,
       child: Column(
@@ -82,7 +81,8 @@ class _ChargerSpotCardSwiperState extends ConsumerState<ChargerSpotCardSwiper> {
             // 充電スポットがない場合は何も表示しない
             firstChild: const SizedBox.shrink(),
             secondChild: SizedBox(
-              height: height * 0.3,
+              // 端末の高さに合わせない、固定の高さ
+              height: 230,
               child: Swiper(
                 itemCount: chargerSpots.length,
                 loop: false,
